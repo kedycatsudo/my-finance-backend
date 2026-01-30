@@ -1,0 +1,88 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id            String         @id @default(uuid()) @db.uuid
+  username      String         @unique @db.VarChar(50)
+  email         String         @unique @db.VarChar(100)
+  monthly_circle_date String?  @db.VarChar(10)
+  password     String
+  created_at   DateTime @default(now())
+  sources      Source[]       @relation("UserSources")
+
+}
+               
+model Source {
+  id        String     @id @default(uuid()) @db.uuid
+  source_name   String @db.VarChar(200)
+  description   String? @db.Text
+  date          DateTime? @db.Date
+  type          SourceType  
+  user_id       String    @db.uuid
+  user          User      @relation(fields:[user_id], references[id], onDelete:Cascade,name:"UserSources")
+  financeSources      FinanceSource[]    @relation("SourceFinanceSources")
+  investmentSources    InvestmentSource[]   @relation("SourceInvestmentSources")
+
+  @@map("sources")
+}
+
+enum SourceType {
+  finance 
+  investment 
+}
+
+model FinanceSource {
+  id        String  @id @default(uuid()) @db.uuid
+  source_id String  @db.uuid
+  type FinanceSourceType
+  name String? @db.Varchar(200)
+  source Source @relation(fields:[source_id], references:[id],onDelete:Cascade,name:"SourceFinanceSources")
+  financePayments FinancePayment[] @relation("FinanceSourceFinancePayment")
+
+  @@map("finance_sources")
+}
+
+enum FinanceSourceType{
+  outcome
+  income
+}
+  
+model FinancePayment{
+  id  String @id @default(uuid()) @db.uuid
+  name  String     @db.VarChar(100)
+  type  PaymentType
+  amount  Decimal
+  date  DateTime  @db.Date
+  loop  Boolean @default(false)
+  status  PaymentStatus
+  financeSource_id  String  @dbUuid
+  financeSource FinanceSource   @relation(fields: )
+  fix this
+}
+
+model InvestmentSource{
+  id String @id @default(uuid()) @db.uuid
+  type InvestmentSourceType
+  name String? @db.VarChar(200)
+  source_id String @db.uuid
+  source Source @relation(fields: [source_id], references: [id], onDelete:Cascade,name: "SourceInvestmentSources")
+  investmentItems InvestmentItem[] @relation("InvestmentSourceInvestmentItems")  @@map("investment_sources")
+
+}
+enum InvestmentSourceType{
+  crypto
+  forex
+  investment
+}
