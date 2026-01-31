@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client"
   output   = "../generated/prisma"
@@ -13,71 +7,83 @@ datasource db {
   provider = "postgresql"
 }
 
+// ------------ USERS -------------
 model Users {
-  id            String         @id @default(uuid()) @db.uuid
-  username      String         @unique @db.VarChar(50)
-  email         String         @unique @db.VarChar(100)
-  monthly_circle_date String?  @db.VarChar(10)
-  password     String
-  created_at   DateTime @default(now())
-  sources      Sources[]       @relation("UserSources")
-
+  id                    String         @id @default(uuid()) @db.uuid
+  username              String         @unique @db.VarChar(50)
+  email                 String         @unique @db.VarChar(100)
+  monthly_circle_date   String?        @db.VarChar(10)
+  password              String
+  created_at            DateTime       @default(now())
+  sources               Sources[]      @relation("UserSources")
 }
-               
+
+// ------------ SOURCES -------------
 model Sources {
-  id        String                                                    @id @default(uuid()) @db.uuid
-  name          String                                              @db.VarChar(200)
-  description   String? @db.Text
-  date          DateTime? @db.Date
-  type          SourceType  
-  user_id       String                                              @db.uuid
-  user         Users                                              @relation(fields:[user_id], references[id], onDelete:Cascade,name:"UserSources")
-  financeSources         FinanceSources[]                          @relation("SourceFinanceSources")
-  investmentSources      InvestmentSources[]                       @relation("SourceInvestmentSources")
+  id                String               @id @default(uuid()) @db.uuid
+  name              String               @db.VarChar(200)
+  description       String?              @db.Text
+  date              DateTime?            @db.Date
+  type              SourceType
+  user_id           String               @db.uuid
+  user              Users                @relation(fields: [user_id], references: [id], onDelete: Cascade, name: "UserSources")
+  financeSources    FinanceSources[]     @relation("SourceFinanceSources")
+  investmentSources InvestmentSources[]  @relation("SourceInvestmentSources")
 }
 
+// ------------ ENUMS -------------
 enum SourceType {
   finance 
   investment 
 }
 
+// ------------ FINANCE SOURCES -------------
 model FinanceSources {
-  id        String  @id @default(uuid()) @db.uuid
-  source_id String  @db.uuid
-  type FinanceSourceType
-  name String? @db.VarChar(200)
-  source Sources @relation(fields:[source_id], references:[id],onDelete:Cascade,name:"SourceFinanceSources")
-  financePayments FinancePayment[] @relation("FinanceSourceFinancePayment")
-  @@map("finance_sources")
+  id               String            @id @default(uuid()) @db.uuid
+  source_id        String            @db.uuid
+  type             FinanceSourceType
+  name             String?           @db.VarChar(200)
+  source           Sources           @relation(fields: [source_id], references: [id], onDelete: Cascade, name: "SourceFinanceSources")
+  financePayments  FinancePayments[] @relation("FinanceSourceFinancePayment")
 
+  @@map("finance_sources")
 }
 
-enum FinanceSourceType{
+enum FinanceSourceType {
   outcome
   income
 }
-   
+
+// ------------ FINANCE PAYMENTS -------------
 model FinancePayments {
-  id  String @id @default(uuid()) @db.uuid
-  name  String     @db.VarChar(100)
-  type  PaymentType
-  amount  Decimal
-  date  DateTime  @db.Date
-  loop  Boolean @default(false)
-  status  PaymentStatus
-  financeSource_id  String  @db.uuid
-  financeSource FinanceSources   @relation(fields:[financeSource_id],references: [id], onDelete: Cascade, name: "FinanceSourceFinancePayment")
+  id                String           @id @default(uuid()) @db.uuid
+  name              String           @db.VarChar(100)
+  type              PaymentType
+  amount            Decimal
+  date              DateTime         @db.Date
+  loop              Boolean          @default(false)
+  status            PaymentStatus
+  financeSource_id  String           @db.uuid
+  financeSource     FinanceSources   @relation(fields: [financeSource_id], references: [id], onDelete: Cascade, name: "FinanceSourceFinancePayment")
+
   @@map("finance_payments")
 }
 
+enum PaymentType {
+  // Insert your actual enum values from DB, e.g. 'income', 'expense'
+}
+enum PaymentStatus {
+  // Insert your actual enum values from DB, e.g. 'pending', 'completed'
+}
 
+// ------------ INVESTMENT SOURCES -------------
 model InvestmentSources {
-  id          String              @id @default(uuid()) @db.uuid
-  type        InvestmentSourceType
-  name        String?             @db.VarChar(200)
-  source_id   String              @db.uuid
-  source      Sources             @relation(fields: [source_id], references: [id], onDelete: Cascade, name: "SourceInvestmentSources")
-  investmentItems InvestmentItems[] @relation("InvestmentSourceInvestmentItems")
+  id               String              @id @default(uuid()) @db.uuid
+  type             InvestmentSourceType
+  name             String?             @db.VarChar(200)
+  source_id        String              @db.uuid
+  source           Sources             @relation(fields: [source_id], references: [id], onDelete: Cascade, name: "SourceInvestmentSources")
+  investmentItems  InvestmentItems[]   @relation("InvestmentSourceInvestmentItems")
 
   @@map("investment_sources")
 }
@@ -87,19 +93,21 @@ enum InvestmentSourceType {
   forex
   investment
 }
-model InvestmentItems {
-  id                    String              @id @default(uuid())  @db.uuid
-  investment_source_id  String              @db.uuid
-  asset_name            String?             @db.VarChar(75)
-  term                  InvestmentTerm
-  invested_amount       Decimal             @db.Decimal(18,2)
-  entry_date            DateTime            @db.Date
-  exit_date             DateTime?           @db.Date
-  result                InvestmentResult
-  result_amount         Decimal?            @db.Decimal(18,2)
-  status                InvestmentStatus   // <-- enum, needs to be defined
 
-  investmentSource      InvestmentSources @relation(
+// ------------ INVESTMENT ITEMS -------------
+model InvestmentItems {
+  id                    String               @id @default(uuid())  @db.uuid
+  investment_source_id  String               @db.uuid
+  asset_name            String?              @db.VarChar(75)
+  term                  InvestmentTerm
+  invested_amount       Decimal              @db.Decimal(18,2)
+  entry_date            DateTime             @db.Date
+  exit_date             DateTime?            @db.Date
+  result                InvestmentResult
+  result_amount         Decimal?             @db.Decimal(18,2)
+  status                InvestmentStatus
+
+  investmentSource      InvestmentSources    @relation(
     fields: [investment_source_id], 
     references: [id], 
     onDelete: Cascade, 
@@ -119,8 +127,6 @@ enum InvestmentResult {
   loss
   none
 }
-
-// ADD this (to match your DB's investment_status)
 enum InvestmentStatus {
-  // values here must match your Postgres enum
+  // Insert values here that exist in your Postgres enum, e.g. 'active', 'closed', etc.
 }
