@@ -1,3 +1,5 @@
+import 'dotenv/config';
+console.log('\n*** DATABASE_URL:', process.env.DATABASE_URL, '\n');
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 
