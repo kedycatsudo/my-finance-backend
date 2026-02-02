@@ -3,6 +3,8 @@ import { ConfigModule } from '@nestjs/config';
 import * as Joi from 'joi';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { UsersModule } from './users/users.module';
+import { PrismaService } from './prisma/prisma.service';
 
 @Module({
   imports: [
@@ -20,8 +22,9 @@ import { AppService } from './app.service';
       // envFilePath: ['.env'],
       // validationOptions: { allowUnknown: true, abortEarly: false },
     }),
+    UsersModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, PrismaService],
 })
 export class AppModule {}
