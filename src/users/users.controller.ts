@@ -8,6 +8,7 @@ import {
   UseGuards,
   Patch,
   Request,
+  Delete,
 } from '@nestjs/common';
 import { Request as ExpressRequest } from 'express';
 
@@ -45,5 +46,12 @@ export class UsersController {
     @Body() UpdateUserDto: UpdateUserDto,
   ) {
     return this.usersService.update(req.user.userId, UpdateUserDto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete('me')
+  async removeMe(@Request() req: AuthenticatedRequest) {
+    await this.usersService.remove(req.user.userId);
+    return { message: 'User removed' };
   }
 }
