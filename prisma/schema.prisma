@@ -8,6 +8,7 @@ datasource db {
 }
 model FinanceSources {
   id               String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id          String              @db.Uuid
   source_id        String              @db.Uuid
   type             finance_source_type
   name             String?             @db.VarChar(200)
