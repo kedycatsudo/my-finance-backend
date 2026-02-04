@@ -5,11 +5,20 @@ import {
   Body,
   Param,
   NotFoundException,
+  UseGuards,
+  Patch,
+  Request,
 } from '@nestjs/common';
+import { Request as ExpressRequest } from 'express';
+
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { users } from '@prisma/client';
-
+import { UpdateUserDto } from './dto/update-user.dto';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+interface AuthenticatedRequest extends ExpressRequest {
+  user: { userId: string; username: string };
+}
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -27,5 +36,14 @@ export class UsersController {
   @Post()
   async create(@Body() CreateUserDto: CreateUserDto): Promise<users> {
     return this.usersService.create(CreateUserDto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('me')
+  async updateMe(
+    @Request() req: AuthenticatedRequest,
+    @Body() UpdateUserDto: UpdateUserDto,
+  ) {
+    return this.usersService.update(req.user.userId, UpdateUserDto);
   }
 }
