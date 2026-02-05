@@ -20,7 +20,7 @@ export class AuthController {
       req.body.password,
     );
     if (!user) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('Invalid username or password');
     }
 
     return this.authService.login(user);
