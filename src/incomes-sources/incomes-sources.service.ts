@@ -1,57 +1,58 @@
 import { Injectable } from '@nestjs/common';
-
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CreateOutcomeSourceDto } from './dto/create-source.dto';
-import { UpdateOutcomeSourceDto } from './dto/update-source.dto';
-
+import { CreateIncomesSourceDto } from './dto/create-incomes-source.dto';
+import { UpdateIncomeSourceDto } from './dto/update-income-source.dto';
 @Injectable()
-export class OutcomesService {
+export class IncomesSourcesService {
   constructor(private prisma: PrismaService) {}
 
-  async create(userId: string, dto: CreateOutcomeSourceDto) {
+  async create(userId: string, dto: CreateIncomesSourceDto) {
     const source = await this.prisma.financeSources.create({
       data: {
         name: dto.name,
         description: dto.description,
         user_id: userId,
-        type: 'outcome',
+        type: 'income',
       },
     });
     return source;
   }
-
   async findAll(userId: string) {
     return this.prisma.financeSources.findMany({
-      where: { user_id: userId, type: 'outcome' },
+      where: { user_id: userId, type: 'income' },
       include: { finance_payments: true },
     });
   }
 
-  async update(userId: string, sourceId: string, dto: UpdateOutcomeSourceDto) {
+  async update(userId: string, sourceId: string, dto: UpdateIncomeSourceDto) {
     const source = await this.prisma.financeSources.findUnique({
       where: { id: sourceId },
     });
-    if (!source || source.user_id !== userId || source.type !== 'outcome')
-      throw new Error('Outcome source not found or unautharized');
-    await this.prisma.financeSources.update({
+    if (!source || source.user_id !== userId || source.type !== 'income')
+      throw new Error('Income source not foind or unauthorized.');
+
+    const updated_source = await this.prisma.financeSources.update({
       where: { id: sourceId },
       data: {
         name: dto.name,
         description: dto.description,
       },
     });
-    return { message: 'Source updated succesfully.' };
+    return { message: 'Source updated succesfully.', updated_source };
   }
 
   async remove(userId: string, sourceId: string) {
     const source = await this.prisma.financeSources.findUnique({
       where: { id: sourceId },
     });
-    if (!source || source.user_id !== userId || source.type !== 'outcome')
-      throw new Error('Outcome source not found or unauthorized');
+    if (!source || source.user_id !== userId || source.type !== 'income') {
+      throw new Error('Income source not found or unauthorized.');
+    }
+
     await this.prisma.financeSources.delete({
       where: { id: sourceId },
     });
-    return { message: 'Outcome source deleted successfully.' };
+    console.log('silindi.');
+    return { message: 'Income source deleted successfully.' };
   }
 }
