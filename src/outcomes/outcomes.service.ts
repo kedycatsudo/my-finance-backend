@@ -25,4 +25,32 @@ export class OutcomesService {
       include: { finance_payments: true },
     });
   }
+
+  async update(userId: string, sourceId: string, dto: UpdateOutcomeSourceDto) {
+    const source = await this.prisma.financeSources.findUnique({
+      where: { id: sourceId },
+    });
+    if (!source || source.user_id !== userId || source.type !== 'outcome')
+      throw new Error('Outcome source not found or unautharized');
+    await this.prisma.financeSources.update({
+      where: { id: sourceId },
+      data: {
+        name: dto.name,
+        description: dto.description,
+      },
+    });
+    return { message: 'Source updated succesfully.' };
+  }
+
+  async remove(userId: string, sourceId: string) {
+    const source = await this.prisma.financeSources.findUnique({
+      where: { id: sourceId },
+    });
+    if (!source || source.user_id !== userId || source.type !== 'outcome')
+      throw new Error('Outcome source not found or unauthorized');
+    await this.prisma.financeSources.delete({
+      where: { id: sourceId },
+    });
+    return { message: 'Outcome source deleted successfully.' };
+  }
 }
