@@ -8,6 +8,7 @@ import { PrismaService } from './prisma/prisma.service';
 import { AuthModule } from './auth/auth.module';
 import { OutcomesModule } from './outcomes/outcomes.module';
 import { IncomesSourcesModule } from './incomes-sources/incomes-sources.module';
+import { InvestmentSourceModule } from './investment-source/investment-source.module';
 @Module({
   imports: [
     //Global config module loading .env and validating with Joi
@@ -28,6 +29,7 @@ import { IncomesSourcesModule } from './incomes-sources/incomes-sources.module';
     AuthModule,
     OutcomesModule,
     IncomesSourcesModule,
+    InvestmentSourceModule,
   ],
   controllers: [AppController],
   providers: [AppService, PrismaService],
