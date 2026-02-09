@@ -1,20 +1,20 @@
 import { Controller, UseGuards, Request, Get } from '@nestjs/common';
-import { OutcomesPaymentService } from './payments.service';
+import { IncomesPaymentService } from './payment.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { Request as ExpressRequest } from 'express';
+
 interface AuthenticatedRequest extends ExpressRequest {
   user: { userId: string; username: string };
 }
-@Controller('outcomes/payments')
+
+@Controller('incomes/payments')
 @UseGuards(JwtAuthGuard)
-export class OutcomesAllPaymentsController {
-  constructor(
-    private readonly OutcomesPaymentService: OutcomesPaymentService,
-  ) {}
+export class IncomesAllPaymentsController {
+  constructor(private readonly incomesPaymentService: IncomesPaymentService) {}
 
   @Get()
   async findAll(@Request() req: AuthenticatedRequest) {
-    const allPayments = await this.OutcomesPaymentService.findAll(
+    const allPayments = await this.incomesPaymentService.findAll(
       req.user.userId,
     );
     return allPayments;

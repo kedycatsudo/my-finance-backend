@@ -15,6 +15,7 @@ import { Request as ExpressRequest } from 'express';
 import { IncomesSourcesService } from './incomes-sources.service';
 import { CreateIncomesSourceDto } from './dto/create-incomes-source.dto';
 import { UpdateIncomeSourceDto } from './dto/update-income-source.dto';
+
 interface AuthenticatedRequest extends ExpressRequest {
   user: { userId: string; username: string };
 }
@@ -58,6 +59,8 @@ export class IncomesSourcesController {
     @Request() req: AuthenticatedRequest,
     @Param('sourceId') sourceId: string,
   ) {
-    return await this.service.remove(req.user.userId, sourceId);
+    await this.service.remove(req.user.userId, sourceId);
+
+    return { message: 'Source deleted succesfully.' };
   }
 }

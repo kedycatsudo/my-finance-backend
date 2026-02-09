@@ -52,7 +52,6 @@ export class IncomesSourcesService {
     await this.prisma.financeSources.delete({
       where: { id: sourceId },
     });
-    console.log('silindi.');
     return { message: 'Income source deleted successfully.' };
   }
 }
