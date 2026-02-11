@@ -35,7 +35,7 @@ model FinancePayments {
 }
 
 model InvestmentSources {
-  id              String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id              String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   user_id          String              @db.Uuid
   type            String
   name            String?                @db.VarChar(200)
