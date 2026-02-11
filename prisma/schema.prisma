@@ -49,16 +49,15 @@ model InvestmentSources {
 model InvestmentItems {
   id                   String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   user_id          String              @db.Uuid
-
   investment_source_id String            @db.Uuid
-  asset_name           String?           @db.VarChar(75)
-  term                 String
+  asset_name           String           @db.VarChar(75)
+  term                 String?
   invested_amount      Decimal           @db.Decimal(18, 2)
   entry_date           DateTime          @db.Date
   exit_date            DateTime?         @db.Date
-  result               investment_result
+  result               String?
   result_amount        Decimal?          @db.Decimal(18, 2)
-  status               investment_status
+  status               String?
   investmentSource     InvestmentSources @relation("InvestmentSourceInvestmentItems", fields: [investment_source_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@map("investment_items")

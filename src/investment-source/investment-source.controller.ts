@@ -37,14 +37,6 @@ export class InvestmentSourceController {
     return this.service.findAll(req.user.userId);
   }
 
-  @Get(':sourceId')
-  async findOne(
-    @Request() req: AuthenticatedRequest,
-    @Param('sourceId') sourceId: string,
-  ) {
-    return this.service.findOne(req.user.userId, sourceId);
-  }
-
   @Patch(':sourceId')
   async update(
     @Request() req: AuthenticatedRequest,
