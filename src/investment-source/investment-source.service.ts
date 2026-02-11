@@ -49,7 +49,7 @@ export class InvestmentSourceService {
       data: {
         name: dto.name,
         description: dto.description,
-        ...(dto.type && { type: dto.type }),
+        type: dto.type,
       },
     });
   }

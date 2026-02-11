@@ -48,9 +48,11 @@ model InvestmentSources {
 
 model InvestmentItems {
   id                   String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id          String              @db.Uuid
+
   investment_source_id String            @db.Uuid
   asset_name           String?           @db.VarChar(75)
-  term                 investment_term
+  term                 String
   invested_amount      Decimal           @db.Decimal(18, 2)
   entry_date           DateTime          @db.Date
   exit_date            DateTime?         @db.Date
